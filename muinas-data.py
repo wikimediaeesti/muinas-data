@@ -21,7 +21,7 @@ site = pywikibot.Site("wikidata", "wikidata")
 repo = site.data_repository()
 
 # We get all items that have a muinas.ee ID
-query = "SELECT ?item WHERE { ?item wdt:P2948 [] } LIMIT 10"
+query = "SELECT ?item WHERE { ?item wdt:P2948 [] }"
 generator = pg.WikidataSPARQLPageGenerator(query, site=site)
 
 for item in generator:
@@ -41,10 +41,10 @@ for item in generator:
 
     # We turn the scraped date into something Wikidata can recognize
     tempDate = muinasDate[0].split('.')
-    muinasYear = int(tempDate[0])
+    muinasYear = int(tempDate[2])
     muinasMonth = int(tempDate[1])
-    muinasDay = int(tempDate[2])
-    muinasWbDate = pywikibot.WbTime(year=muinasYear, month=muinasMonth, day=muinasDay, precision='day')
+    muinasDay = int(tempDate[0])
+    muinasWbDate = pywikibot.WbTime(year=muinasYear, month=muinasMonth, day=muinasDay)
 
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if muinasTypeItem != "nothing" and not (u'P1435' in item.claims):
@@ -54,9 +54,9 @@ for item in generator:
         item.addClaim(claim,
                       summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
         # Dates currently broken, WIP
-        # qualifier = pywikibot.Claim(repo, "P580")
-        # qualifier.setTarget(muinasWbDate)
-        # claim.addQualifier(qualifier, summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
+        qualifier = pywikibot.Claim(repo, "P580")
+        qualifier.setTarget(muinasWbDate)
+        claim.addQualifier(qualifier, summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
         statedin = pywikibot.Claim(repo, "P248")
         enrcm = pywikibot.ItemPage(repo, "Q3743725")
         statedin.setTarget(enrcm)
