@@ -42,8 +42,6 @@ for item in generator:
     for type in muinasTypes:
         muinasTypeItems.append(muinastype_to_item(type))
 
-    print muinasTypeItems
-
     # We turn the scraped date into something Wikidata can recognize
     tempDate = muinasDate.split('-')
     muinasYear = int(tempDate[0])
@@ -53,7 +51,6 @@ for item in generator:
 
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if muinasTypeItems and not (u'P1435' in item.claims):
-        print "Type!"
         for type in muinasTypeItems:
             claim = pywikibot.Claim(repo, "P1435")
             target = pywikibot.ItemPage(repo, type)
