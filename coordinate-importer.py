@@ -45,7 +45,7 @@ for item in generator:
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if geo_coords is not None and not (u'P625' in item.claims):
         claim = pywikibot.Claim(repo, "P625")
-        coordinates = pywikibot.Coordinate(lat=float(geo_coords[0]), lon=float(geo_coords[1]), globe="earth", precision=0.0000000001)
+        coordinates = pywikibot.Coordinate(lat=float(geo_coords[0]), lon=float(geo_coords[1]), globe="earth", precision=0.001)
         print coordinates
         claim.setTarget(coordinates)
         item.addClaim(claim,
