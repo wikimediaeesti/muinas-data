@@ -38,9 +38,9 @@ for item in generator:
         lest_coords = coordinate_dict.get(muinasID)
 
         # We turn the LEST coordinates into geodetic
-        geo_coords = lest_coords_to_geo_coords(lest_coords)
-        print geo_coords
-        print geo_coords[0]
+        if lest_coords != ",":
+            geo_coords = lest_coords_to_geo_coords(lest_coords)
+            print geo_coords
 
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if geo_coords is not None and not (u'P625' in item.claims):
