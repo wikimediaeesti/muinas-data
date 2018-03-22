@@ -1,4 +1,4 @@
-import urllib, json
+import requests, json
 import pywikibot
 from pywikibot import pagegenerators as pg
 
@@ -31,8 +31,8 @@ for item in generator:
 
 
     # We look at the muinas.ee API to get the type of monument and the date of registration
-    response = urllib.urlopen("https://register.muinas.ee/rest/v1/monuments/" + muinasID)
-    data = json.loads(response.read())
+    response = requests.get("https://register.muinas.ee/rest/v1/monuments/" + muinasID)
+    data = response.json()
     muinasTypes = data['classifications']
     muinasDate = data['registered']
 
@@ -64,5 +64,14 @@ for item in generator:
             statedin.setTarget(enrcm)
             claim.addSources([statedin],
                              summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
+            print "Adding type: " + type
     else:
         print "No muinastype detected"
+
+    if not (u'P17' in item.claims):
+        claim = pywikibot.Claim(repo, "P17")
+        target = pywikibot.ItemPage(repo, "Q191")
+        claim.setTarget(target)
+        item.addClaim(claim,
+                      summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
+        print "Adding country: Estonia"
