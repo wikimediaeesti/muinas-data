@@ -64,9 +64,9 @@ for item in generator:
             statedin.setTarget(enrcm)
             claim.addSources([statedin],
                              summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
-            print "Adding type: " + type
+            print("Adding type: " + type)
     else:
-        print "No muinastype detected"
+        print("No muinastype detected")
 
     if not (u'P17' in item.claims):
         claim = pywikibot.Claim(repo, "P17")
@@ -74,4 +74,4 @@ for item in generator:
         claim.setTarget(target)
         item.addClaim(claim,
                       summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
-        print "Adding country: Estonia"
+        print("Adding country: Estonia")

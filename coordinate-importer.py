@@ -1,12 +1,12 @@
-import csv, urllib
+import csv
 import pywikibot
 from pywikibot import pagegenerators as pg
-
+from urllib.request import urlopen
 
 # Provided coordinates are in LAMBERT-EST projection, we need geodetic coordinates
 def lest_coords_to_geo_coords(lest_coords):
-    page = urllib.urlopen("https://www.maaamet.ee/rr/geo-lest/url/?xy=" + lest_coords)
-    coords = page.read()
+    page = urlopen("https://www.maaamet.ee/rr/geo-lest/url/?xy=" + lest_coords)
+    coords = page.read().decode()
     geo_coords = coords.split(",")
     return geo_coords
 
@@ -40,13 +40,13 @@ for item in generator:
         # We turn the LEST coordinates into geodetic
         if lest_coords != ",":
             geo_coords = lest_coords_to_geo_coords(lest_coords)
-            print geo_coords
+            print(geo_coords)
 
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if geo_coords is not None and not (u'P625' in item.claims):
         claim = pywikibot.Claim(repo, "P625")
         coordinates = pywikibot.Coordinate(lat=float(geo_coords[0]), lon=float(geo_coords[1]), globe="earth", precision=0.001)
-        print coordinates
+        print(coordinates)
         claim.setTarget(coordinates)
         item.addClaim(claim,
                       summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
@@ -56,4 +56,4 @@ for item in generator:
         claim.addSources([statedin],
                          summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
     else:
-        print "No coordinates sent"
+        print("No coordinates sent")
