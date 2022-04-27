@@ -12,6 +12,7 @@ def muinastype_to_item(argument):
         u'kunstim\xe4lestis': "Q25503887",
         u'ajaloom\xe4lestis': "Q12358501",
         u'arheoloogiam\xe4lestis': "Q43874039",
+        u'ajalooline looduslik p\xfchapaik': "Q106350489",
     }
     return switcher.get(argument, "nothing")
 
@@ -33,6 +34,8 @@ for item in generator:
     # We look at the muinas.ee API to get the type of monument and the date of registration
     response = requests.get("https://register.muinas.ee/rest/v1/monuments/" + muinasID)
     data = response.json()
+    if not (('classifications' in data) and ('registered' in data)):
+        continue
     muinasTypes = data['classifications']
     muinasDate = data['registered']
 
@@ -42,11 +45,12 @@ for item in generator:
         muinasTypeItems.append(muinastype_to_item(type))
 
     # We turn the date into something Wikidata can recognize
-    tempDate = muinasDate.split('-')
-    muinasYear = int(tempDate[0])
-    muinasMonth = int(tempDate[1])
-    muinasDay = int(tempDate[2])
-    muinasWbDate = pywikibot.WbTime(year=muinasYear, month=muinasMonth, day=muinasDay)
+    if muinasDate:
+        tempDate = muinasDate.split('-')
+        muinasYear = int(tempDate[0])
+        muinasMonth = int(tempDate[1])
+        muinasDay = int(tempDate[2])
+        muinasWbDate = pywikibot.WbTime(year=muinasYear, month=muinasMonth, day=muinasDay)
 
     # As long as the type we found matched one of our items, we send the info, including the date, to Wikidata
     if muinasTypeItems and not (u'P1435' in item.claims):
@@ -56,9 +60,10 @@ for item in generator:
             claim.setTarget(target)
             item.addClaim(claim,
                           summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
-            qualifier = pywikibot.Claim(repo, "P580")
-            qualifier.setTarget(muinasWbDate)
-            claim.addQualifier(qualifier, summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
+            if muinasWbDate:
+                qualifier = pywikibot.Claim(repo, "P580")
+                qualifier.setTarget(muinasWbDate)
+                claim.addQualifier(qualifier, summary=u'Importing heritage information from the Estonian National Registry of Cultural Monuments')
             statedin = pywikibot.Claim(repo, "P248")
             enrcm = pywikibot.ItemPage(repo, "Q3743725")
             statedin.setTarget(enrcm)
